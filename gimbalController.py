@@ -8,11 +8,12 @@ PTR is the gimbal
 
 '''
 # controll characters
-STX = 0x02 # Start of text sent by remote
-ETX = 0x03 # end of text sent by remote/PTR
-ACK = 0x06 # Acknowledge sent by PTR
-NAK = 0x15 # Not Acknowledge sent by PTR
-ESC = 0x1B # escape characters
+STX = 0x02  # Start of text sent by remote
+ETX = 0x03  # end of text sent by remote/PTR
+ACK = 0x06  # Acknowledge sent by PTR
+NAK = 0x15  # Not Acknowledge sent by PTR
+ESC = 0x1B  # escape characters
+
 
 class GimbalController:
 
@@ -39,8 +40,8 @@ class GimbalController:
         after just a quick thought about this we would have to make the packet array a 
         string to send over socket
         '''
-        pass
-    
+        self.sock.sendall(packetArray)
+
     # stubbed out method
     def received(self):
         '''
@@ -55,16 +56,10 @@ class GimbalController:
         '''
         self.sock.close()
 
-'''
-==================================================================================================================
-=
-=               SOCKET METHODS ABOVE THIS LINE
-=
-==================================================================================================================
-'''
+        
 
-
-    def calculateLRC(self, CommandNumberAndData): # CommandNumberAndData should be a list of bytes
+    # CommandNumberAndData should be a list of bytes
+    def calculateLRC(self, CommandNumberAndData):
         '''
         Calculates lrc by xoring all bits together
         returns lrc or none if CommandNumberAndData is none
@@ -72,12 +67,13 @@ class GimbalController:
         lrc = 0
         if CommandNumberAndData is not None:
             for byte in CommandNumberAndData:
-                lrc ^= byte
+                if isinstance(byte, int):
+                    lrc ^= byte
+                else:
+                    lrc ^= int.from_bytes(byte, byteorder='little', signed=True)
             return lrc
         else:
             return None
-        
-
 
     def convertIntegerToShort(self, integer):
         '''
@@ -100,14 +96,18 @@ class GimbalController:
         if integer > 32767 or integer < -32768:
             return None
         else:
-            return struct.pack("<h", integer) # < stands for little endian and h is for short
+            # < stands for little endian and h is for short
+            return struct.pack("<h", integer)
 
     def moveToHome(self):
+        '''
+        This moves to preset position number 31
+        '''
         packetArray = []
         command = 0x36
         packetArray.append(STX)
         packetArray.append(command)
-        packetArray.append(self.calculateLRC(packetArray[1:2])) 
+        packetArray.append(self.calculateLRC(packetArray[1:2]))
         '''
         gets the second item in list. Must use a slice so that it returns a list itself since 
         calculateLRC expexts a list
@@ -119,12 +119,90 @@ class GimbalController:
 
         # get return packet
         self.received()
-        print(packetArray)
+
+    def moveToEnteredCoordinate(self, panCoord, tiltCoord):
+        '''
+        The Coordinate must be the desired position to the 1/10th degree multiplied by 10
+        so 90.0 degrees is 900 and 45.9 is 459
+
+        If you only want to pan then send 9999 (999.9 degress) as tilt coordinate and vise versa
+
+        The PTR will also account for angle offset to make sure commands are not out of bounds
+        '''
+        packetArray = []
+        command = 0x33
+        packetArray.append(STX)
+        packetArray.append(command)
+        packetArray.append(self.convertIntegerToShort(panCoord))
+        packetArray.append(self.convertIntegerToShort(tiltCoord))
+        packetArray.append(self.calculateLRC(packetArray[1:4]))
+        packetArray.append(ETX)     
+
+        # send packet
+        self.send(packetArray)
+
+        # get return packet
+        self.received()  
+
+    def moveToAbsoluteZero(self):
+        '''
+        This command will return the PTR to the stored center 
+        '''
+        packetArray = []
+        command = 0x35
+        packetArray.append(STX)
+        packetArray.append(command)
+        packetArray.append(self.calculateLRC(packetArray[1:2])) 
+        packetArray.append(ETX)
+
+        # send packet
+        self.send(packetArray)
+
+        # get return packet
+        self.received()
+
+    def retrievePresetTableEntry(self, preset):
+        '''
+        Takes the preset, which must be in hex (0x00-0x1F). Returns the stored coordinate position
+        '''
+        packetArray = []
+        command = 0x40
+        packetArray.append(STX)
+        packetArray.append(command)
+        packetArray.append(preset)
+        packetArray.append(self.calculateLRC(packetArray[1:3])) 
+        packetArray.append(ETX)
+
+        # send packet
+        self.send(packetArray)
+
+        # get return packet
+        self.received()
+
+    def saveCurrentPositionAsPreset(self, preset):
+        '''
+        Takes the preset, which must be in hex (0x00-0x1F) and sets the current position to that preset
+        '''
+        packetArray = []
+        command = 0x42
+        packetArray.append(STX)
+        packetArray.append(command)
+        packetArray.append(preset)
+        packetArray.append(self.calculateLRC(packetArray[1:3])) 
+        packetArray.append(ETX)
+
+        # send packet
+        self.send(packetArray)
+
+        # get return packet
+        self.received()
 
 def main():
     #print(convertIntegerToShort(-2))
     controller = GimbalController()
-    controller.moveToHome()
+    #controller.moveToHome()
+    controller.moveToEnteredCoordinate(200, 123)
+
 
 if __name__ == '__main__':
     main()
