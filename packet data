@@ -1,0 +1,33 @@
+jog/get status: 02:00:31:04:00:00:00:00:00:00:35:03
+02 = start text
+00 = extra byte?
+31 = command number
+04 = cmd osl bit is set
+00:00:00:00 pan, tilt, aux bit, aux bit # stays stationary
+35 = lrc
+03 = end text
+
+set soft limit to current position 02:00:81:80:01:03
+
+?? 02:00:85:85:03
+
+retrieve preset table entry: 
+02:00:40:00:40:03
+02:40:00:40:03
+02:00:40:00:40:03
+This got preset 00  
+02:00:40:01:41:03
+this got preset 01
+
+move to home: 02:00:36:36:03
+02:36:36:03
+02:00:36:36:03
+responds with 06:00:36:20:ea:ff:b0:04:00:80:80:30:00:00:00:00:87:03
+sends as two packets split at b0:04
+06 = ack
+00 = extra byte?
+36 = command number
+20:ea = pan coord
+ff:b0 = tilt coord
+
+

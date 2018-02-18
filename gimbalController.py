@@ -40,14 +40,15 @@ class GimbalController:
         after just a quick thought about this we would have to make the packet array a 
         string to send over socket
         '''
-        self.sock.sendall(packetArray)
+        print(bytearray(packetArray))
+        self.sock.send(bytearray(packetArray))
 
     # stubbed out method
     def received(self):
         '''
         we might have to do the same thing with the method above
         '''
-        pass
+        return self.sock.recv(1024)
 
     def closeSocket(self):
         '''
@@ -99,6 +100,45 @@ class GimbalController:
             # < stands for little endian and h is for short
             return struct.pack("<h", integer)
 
+    def getStatusJog(self, pan, tilt, speed, osl, stop, reset):
+        packetArray = []
+        command = 0x31
+        bitsetCommand = (0 | 0 | 0 | 0 | 0 | osl | stop | reset)
+        packetArray.append(STX)
+        packetArray.append(0x00)
+        packetArray.append(command)
+        packetArray.append(bitsetCommand)
+        if speed is 0:
+            '''
+            Keep gimbel still
+            '''
+            packetArray.append(0x00)
+            packetArray.append(0x00)
+        else:
+            pass
+        '''
+        Auxiliary byte or bitset
+
+        From the controller protocol 
+        
+        The two auxiliary commands are currently not implemented in hardware but have the potential to provide focus and
+        zoom control, camera switching, time stamping commands, etc. They should be written as 0.
+        '''
+        packetArray.append(0x00)
+        packetArray.append(0x00)
+        packetArray.append(self.calculateLRC(packetArray[2:7]))
+        packetArray.append(ETX)
+
+        self.connect('192.168.0.36', 10001)
+        print("connected")
+        self.send(packetArray)
+        print("sent packet")
+
+        # get return packet
+        packet = self.received()
+
+        print(packet)
+
     def moveToHome(self):
         '''
         This moves to preset position number 31
@@ -106,8 +146,9 @@ class GimbalController:
         packetArray = []
         command = 0x36
         packetArray.append(STX)
+        packetArray.append(0x00)
         packetArray.append(command)
-        packetArray.append(self.calculateLRC(packetArray[1:2]))
+        packetArray.append(self.calculateLRC(packetArray[2:3]))
         '''
         gets the second item in list. Must use a slice so that it returns a list itself since 
         calculateLRC expexts a list
@@ -115,10 +156,15 @@ class GimbalController:
         packetArray.append(ETX)
 
         # send packet
+        self.connect('192.168.0.36', 10001)
+        print("connected")
         self.send(packetArray)
+        print("sent packet")
 
         # get return packet
-        self.received()
+        packet = self.received()
+
+        print(packet)
 
     def moveToEnteredCoordinate(self, panCoord, tiltCoord):
         '''
@@ -168,16 +214,22 @@ class GimbalController:
         packetArray = []
         command = 0x40
         packetArray.append(STX)
+        packetArray.append(0x00)
         packetArray.append(command)
         packetArray.append(preset)
-        packetArray.append(self.calculateLRC(packetArray[1:3])) 
+        packetArray.append(self.calculateLRC(packetArray[2:4])) 
         packetArray.append(ETX)
 
         # send packet
+        self.connect('192.168.0.36', 10001)
+        print("connected")
         self.send(packetArray)
+        print("sent packet")
 
         # get return packet
-        self.received()
+        packet = self.received()
+
+        print(packet)
 
     def saveCurrentPositionAsPreset(self, preset):
         '''
@@ -200,8 +252,10 @@ class GimbalController:
 def main():
     #print(convertIntegerToShort(-2))
     controller = GimbalController()
+    controller.getStatusJog(1,1,0,4,0,0)
     #controller.moveToHome()
-    controller.moveToEnteredCoordinate(200, 123)
+    #controller.retrievePresetTableEntry(0x00)
+    #controller.moveToEnteredCoordinate(200, 123)
 
 
 if __name__ == '__main__':
