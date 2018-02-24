@@ -1,5 +1,6 @@
 import struct
 import socket
+import time
 
 '''
 
@@ -17,22 +18,16 @@ ESC = 0x1B  # escape characters
 
 class GimbalController:
 
-    def __init__(self, sock=None):
+    def __init__(self, host, port, sock=None):
         '''
         Function to initilize the socket
         can change socket if it is not tcp which is what the below code is
         '''
         if sock is None:
-            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            # self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.sock = socket.create_connection((host, port))
         else:
             self.sock = sock
-
-    def connect(self, host, port):
-        '''
-        connect to host with given port
-        need this method to controll multiple gimbals
-        '''
-        self.sock.connect((host, port))
 
     # stubbed out method
     def send(self, packetArray):
@@ -44,11 +39,29 @@ class GimbalController:
         self.sock.send(bytearray(packetArray))
 
     # stubbed out method
-    def received(self):
+    def received(self, timeout=400000):
         '''
         we might have to do the same thing with the method above
         '''
-        return self.sock.recv(1024)
+        print("start recv")
+        self.sock.setblocking(False)
+        begin = time.time()
+        data = ''
+
+        while True:
+            if data and time.time() - begin > timeout:
+                break
+            elif time.time() - begin > timeout:
+                break
+            try:
+                data = self.sock.recv(1024)
+                if ETX in data:
+                    break                
+            except:
+                pass
+        # data = self.sock.recv(2048)
+        print("end recv")
+        return data
 
     def closeSocket(self):
         '''
@@ -115,7 +128,8 @@ class GimbalController:
             packetArray.append(0x00)
             packetArray.append(0x00)
         else:
-            pass
+            packetArray.append(0xFF)
+            packetArray.append(0x00)
         '''
         Auxiliary byte or bitset
 
@@ -129,11 +143,25 @@ class GimbalController:
         packetArray.append(self.calculateLRC(packetArray[2:7]))
         packetArray.append(ETX)
 
-        self.connect('192.168.0.36', 10001)
-        print("connected")
         self.send(packetArray)
-        print("sent packet")
+     
+        # get return packet
+        packet = self.received()
 
+        print(packet)
+
+    def setSoftLimits(self, axisNumber):
+        packetArray = []
+        command = 0x81
+        packetArray.append(STX)
+        packetArray.append(0x00)
+        packetArray.append(command)
+        packetArray.append(axisNumber)
+        packetArray.append(self.calculateLRC(packetArray[2:4]))
+        packetArray.append(ETX)
+
+        self.send(packetArray)
+     
         # get return packet
         packet = self.received()
 
@@ -156,11 +184,8 @@ class GimbalController:
         packetArray.append(ETX)
 
         # send packet
-        self.connect('192.168.0.36', 10001)
-        print("connected")
         self.send(packetArray)
-        print("sent packet")
-
+     
         # get return packet
         packet = self.received()
 
@@ -221,11 +246,8 @@ class GimbalController:
         packetArray.append(ETX)
 
         # send packet
-        self.connect('192.168.0.36', 10001)
-        print("connected")
         self.send(packetArray)
-        print("sent packet")
-
+        
         # get return packet
         packet = self.received()
 
@@ -251,9 +273,13 @@ class GimbalController:
 
 def main():
     #print(convertIntegerToShort(-2))
-    controller = GimbalController()
-    controller.getStatusJog(1,1,0,4,0,0)
-    #controller.moveToHome()
+    controller = GimbalController('192.168.0.36', 10001)
+    # controller.moveToHome()
+    while 1:
+        
+        controller.getStatusJog(1,1,1,4,0,0)
+        
+    #controller.moveToAbsoluteZero()
     #controller.retrievePresetTableEntry(0x00)
     #controller.moveToEnteredCoordinate(200, 123)
 
