@@ -6,7 +6,8 @@ app = Flask(__name__)
 #Creates a webpage based on the html template given
 @app.route('/')
 def index():
-	return render_template('main.js')
+	return render_template('defaults.html')
+
 #used to actually run the webpage server
 if __name__ == '__main__':
 	app.run(debug=True, host='0.0.0.0')

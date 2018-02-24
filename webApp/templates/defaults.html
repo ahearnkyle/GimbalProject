@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>Defaults</title>
+  <meta name="viewport" content="width=device-width">
+  <style>
+  .container {
+    width: 600px;
+    margin: 100px auto;
+    text-align: center;
+  }
+
+  .gauge {
+    width: 250px;
+    height: 250px;
+    display: inline-block;
+  }
+
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div id="gg1" class="gauge"></div>
+    <div id="gg2" class="gauge" data-value="25"></div>
+  </div>
+  <script type="text/javascript" src="{{url_for('static',filename='raphael-2.1.4.min.js')}}"></script>
+  <script type="text/javascript" src="{{url_for('static',filename='justgage.js')}}"></script>
+  <script>
+  var gauge1 = new JustGage({
+	  id: "gg1",
+	  value: 90,
+	  min: -180,
+	  max: 180,
+	  title:"Horizontal"
+	});
+  var gauge2 = new JustGage({
+	  id: "gg2",
+	  value: 90,
+	  min: -180,
+	  max: 180,
+	  title: "Vertical"
+  });
+  </script>
+</body>
+
+</html>

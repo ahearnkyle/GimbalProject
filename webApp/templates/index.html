@@ -1,7 +1,19 @@
 <html>
-	<body>
-		<header1>
-		Hello from a template!
-		</header1>
-	</body>
+	<head>
+		<script src="raphael.2.1.0.min.js"></script>
+		<script src="justgage.1.0.1.min.js"></script>
+	</head>
+	<h1>"this is my test for the gauge"</h1>
+	<p id="gArea"></p>
+	<canvas id="gauge" class="200x160px"></canvas>
+	<script>
+  	var g = new JustGage({
+	id: "gauge",
+	value: 67,
+	min: 0,
+	max: 100,
+	title: "Visitors"
+	});
+	document.getElementById('gArea').innerHTML = g;
+	</script>
 </html>

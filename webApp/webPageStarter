@@ -1,3 +1,3 @@
 #!/bin/sh
 echo 'Starting the web page...'
-python3 ~/GimbalProject/webApp/app.py &
+python3 /home/pi/GimbalProject/webApp/app.py &
