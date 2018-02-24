@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8" />
-  <title>Defaults</title>
+  <title>Gimbal Control Center</title>
   <meta name="viewport" content="width=device-width">
   <style>
   .container {
@@ -17,14 +17,40 @@
     height: 250px;
     display: inline-block;
   }
-
+  /*Below will allow you to style the tab itself.*/
+  .tab {
+	overflow: hidden;
+	border: 1px solid #ccc;
+	background-color: #f1f1f1;
+  }
+  /*Below is the style for the tab buttons.*/
+  .tab button {
+	background-color: inherit;
+	float: left;
+	border: none;
+	cursor: pointer;
+	padding: 14px 16px;
+	transition: 0.5s; 
+	font-size: 17px;
+  }
+  /*Below will style the button when you hover over it.*/
+  .tab button:hover {
+	background-color: #ddd;
+  }
+  /*Below will allow you to style the tab content.*/
+  .tabcontent {
+	display:none;
+	padding: 6px 12px;
+	border: 1px solid #ccc;
+	border-top: none;
+  }
   </style>
 </head>
 
 <body>
   <div class="container">
     <div id="gg1" class="gauge"></div>
-    <div id="gg2" class="gauge" data-value="25"></div>
+    <div id="gg2" class="gauge"></div>
   </div>
   <script type="text/javascript" src="{{url_for('static',filename='raphael-2.1.4.min.js')}}"></script>
   <script type="text/javascript" src="{{url_for('static',filename='justgage.js')}}"></script>
@@ -32,18 +58,81 @@
   var gauge1 = new JustGage({
 	  id: "gg1",
 	  value: 90,
-	  min: -180,
-	  max: 180,
-	  title:"Horizontal"
+	  min: 0,
+	  max: 360,
+	  title:"Pan"
 	});
   var gauge2 = new JustGage({
 	  id: "gg2",
-	  value: 90,
-	  min: -180,
-	  max: 180,
-	  title: "Vertical"
+	  value: 67,
+	  min: 0,
+	  max: 360,
+	  title: "Tilt"
   });
   </script>
+<div class="tab">
+  <button class="tablinks" onclick="openJog(event)">Jog</button>
+  <button class="tablinks" onclick="openMoveTo(event)">Move To</button>
+  <button class="tablinks" onclick="openPresets(event)">Presets</button>
+</div>
+
+<div id="jog" class="tabcontent">
+  <h3>Welcome to the Job Tab</h3>
+  <p>This is where we will be implementing the Jog functionality</p>
+</div>
+
+<div id="moveto" class="tabcontent">
+  <h3>Welcome to the Move To tab</h3>
+  <p>This is where we will be implementing the Move to functionality.</p> 
+</div>
+
+<div id="presets" class="tabcontent">
+  <h3>Welcome to the Presets tab</h3>
+  <p>This is where we will be implementing the Presets functionality</p>
+</div>
+
+<script>
+document.getElementsByClassName('tablinks')[0].click();
+function openJog(evt){
+	var i, tabcontent, tablinks;
+    	tabcontent = document.getElementsByClassName("tabcontent");
+    	for (i = 0; i < tabcontent.length; i++) {
+        	tabcontent[i].style.display = "none";
+    	}
+    	tablinks = document.getElementsByClassName("tablinks");
+    	for (i = 0; i < tablinks.length; i++) {
+        	tablinks[i].className = tablinks[i].className.replace(" active", "");
+    	}
+    	document.getElementById('jog').style.display = "block";
+    	evt.currentTarget.className += " active";
+}
+function openMoveTo(evt) {
+	var i, tabcontent, tablinks;
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+    }
+    tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+    document.getElementById('moveto').style.display = "block";
+    evt.currentTarget.className += " active";
+}
+function openPresets(evt){
+var i, tabcontent, tablinks;
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+    }
+    tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+    document.getElementById('presets').style.display = "block";
+    evt.currentTarget.className += " active";
+}
+</script>
 </body>
 
 </html>
