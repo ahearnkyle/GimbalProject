@@ -1,6 +1,7 @@
 import struct
 import socket
 import time
+import sys
 
 '''
 
@@ -35,7 +36,7 @@ class GimbalController:
         after just a quick thought about this we would have to make the packet array a 
         string to send over socket
         '''
-        print(bytearray(packetArray))
+        # print(bytearray(packetArray))
         self.sock.send(bytearray(packetArray))
 
     # stubbed out method
@@ -43,7 +44,7 @@ class GimbalController:
         '''
         we might have to do the same thing with the method above
         '''
-        print("start recv")
+        # print("start recv")
         self.sock.setblocking(False)
         begin = time.time()
         data = ''
@@ -60,7 +61,7 @@ class GimbalController:
             except:
                 pass
         # data = self.sock.recv(2048)
-        print("end recv")
+        # print("end recv")
         return data
 
     def closeSocket(self):
@@ -113,23 +114,44 @@ class GimbalController:
             # < stands for little endian and h is for short
             return struct.pack("<h", integer)
 
-    def getStatusJog(self, pan, tilt, speed, osl, stop, reset):
+    def getStatusJog(self, pan, tilt, panSpeed, tiltSpeed, osl, stop, reset):
+        '''
+        pan is either 128 or 0
+        tilt is either 128 or 0 
+        panSpeed is either 0,1,2,3 with 0 being still and 3 being the fastest
+        tiltSpeed is either 0,1,2,3 with 0 being still and 3 being the fastest
+        osl is 4 and overrides the softlimits 
+        stop is 0
+        reset is 0
+        '''
         packetArray = []
         command = 0x31
-        bitsetCommand = (0 | 0 | 0 | 0 | 0 | osl | stop | reset)
+        bitsetCommand = (pan | tilt | 0 | 0 | 0 | osl | stop | reset)
         packetArray.append(STX)
         packetArray.append(0x00)
         packetArray.append(command)
         packetArray.append(bitsetCommand)
-        if speed is 0:
+        if panSpeed is 0:
             '''
             Keep gimbel still
             '''
             packetArray.append(0x00)
+        else:
+            if panSpeed is 1:
+                packetArray.append(0x10)
+            elif panSpeed is 2:
+                packetArray.append(0x70)
+            elif panSpeed is 3:
+                packetArray.append(0xFF)
+        if tiltSpeed is 0:
             packetArray.append(0x00)
         else:
-            packetArray.append(0xFF)
-            packetArray.append(0x00)
+            if tiltSpeed is 1:
+                packetArray.append(0x10)
+            elif tiltSpeed is 2:
+                packetArray.append(0x70)
+            elif tiltSpeed is 3:
+                packetArray.append(0xFF)
         '''
         Auxiliary byte or bitset
 
@@ -140,7 +162,9 @@ class GimbalController:
         '''
         packetArray.append(0x00)
         packetArray.append(0x00)
-        packetArray.append(self.calculateLRC(packetArray[2:7]))
+        packetArray.append(0x00)
+        packetArray.append(0x00)
+        packetArray.append(self.calculateLRC(packetArray[2:9]))
         packetArray.append(ETX)
 
         self.send(packetArray)
@@ -148,7 +172,7 @@ class GimbalController:
         # get return packet
         packet = self.received()
 
-        print(packet)
+        # print(packet)
 
     def setSoftLimits(self, axisNumber):
         packetArray = []
@@ -271,18 +295,23 @@ class GimbalController:
         # get return packet
         self.received()
 
-def main():
-    #print(convertIntegerToShort(-2))
-    controller = GimbalController('192.168.0.36', 10001)
-    # controller.moveToHome()
-    while 1:
+# def main():
+#     try:
+#         #print(convertIntegerToShort(-2))
+#         controller = GimbalController('192.168.0.36', 10001)
+#         controller.getStatusJog(0,0,3,0,4,0,0)
+#         # controller.moveToHome()
+#         # while 1:
+            
+#         #     controller.getStatusJog(1,1,1,4,0,0)
+            
+#         #controller.moveToAbsoluteZero()
+#         #controller.retrievePresetTableEntry(0x00)
+#         #controller.moveToEnteredCoordinate(200, 123)
         
-        controller.getStatusJog(1,1,1,4,0,0)
+#     except KeyboardInterrupt:  
+#         controller.getStatusJog(1,1,0,4,0,0)
+#         sys.exit()        
         
-    #controller.moveToAbsoluteZero()
-    #controller.retrievePresetTableEntry(0x00)
-    #controller.moveToEnteredCoordinate(200, 123)
-
-
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()
