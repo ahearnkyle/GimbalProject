@@ -53,10 +53,10 @@ def startControllerListener():
     LEFT_TRIGGER_PRESSED = 0
     RIGHT_TRIGGER_PRESSED = 0
     PAN = 0
-    PAN_SPEED = 1
+    PAN_SPEED = 0
     PAN_PRESSED = 0
     TILT = 0
-    TILT_SPEED = 1
+    TILT_SPEED = 0
     TILT_PRESSED = 0
 
     #Grab and initialize controller
@@ -80,25 +80,22 @@ def startControllerListener():
                             START_IS_PRESSED = True
                     if START_IS_PRESSED and RIGHT_BUMPER_PRESSED and LEFT_BUMPER_PRESSED:
                         CONTROLLER_INPUT_ACTIVE = True
+            gimbal.getStatusJog(0,0,0,0,4,0,0)    
         # get speed
+        pygame.event.pump()
         LEFT_TRIGGER_PRESSED = controller.get_axis(LEFT_TRIGGER)
         RIGHT_TRIGGER_PRESSED = controller.get_axis(RIGHT_TRIGGER)
-        if LEFT_TRIGGER_PRESSED == -1.0 and RIGHT_TRIGGER_PRESSED == -1.0:
+        print(LEFT_TRIGGER_PRESSED)
+        print(RIGHT_TRIGGER_PRESSED)
+        if LEFT_TRIGGER_PRESSED == 0 and RIGHT_TRIGGER_PRESSED == 0 or LEFT_TRIGGER_PRESSED == -1.0 and RIGHT_TRIGGER_PRESSED == -1.0 :
             PAN_SPEED = 0
-            TILT_SPEED = 0
-        elif LEFT_TRIGGER_PRESSED != -1.0 and RIGHT_TRIGGER_PRESSED != -1.0:
-            PAN_SPEED = 1
-            TILT_SPEED = 1
-        elif LEFT_TRIGGER_PRESSED != -1.0:
-            PAN_SPEED = 2
-            TILT_SPEED = 2
-        elif RIGHT_TRIGGER_PRESSED != -1.0:
-            PAN_SPEED = 3
-            TILT_SPEED = 3     
+            TILT_SPEED = 0   
         
         # get axis
         PAN_PRESSED = controller.get_axis(LEFT_STICK_LEFT_RIGHT)
         TILT_PRESSED = controller.get_axis(LEFT_STICK_UP_DOWN)   
+        print(PAN_PRESSED)
+        print(TILT_PRESSED)
         if PAN_PRESSED == 0.0 and TILT_PRESSED == 0.0:
             PAN = 0
             TILT = 0
@@ -108,13 +105,26 @@ def startControllerListener():
                 TILT = 64
             else:
                 TILT = 0
+            if TILT_SPEED == 0:
+                TILT_SPEED = 1
+            if LEFT_TRIGGER_PRESSED != -1.0:
+                TILT_SPEED = 2
+            if RIGHT_TRIGGER_PRESSED != -1.0:
+                TILT_SPEED = 3
         elif PAN_PRESSED > -.7 and PAN_PRESSED < .7:
             if TILT_PRESSED < 0:
                 PAN = 128
             else:
                 PAN = 0
+            if PAN_SPEED == 0:
+                PAN_SPEED = 1
+            if LEFT_TRIGGER_PRESSED != -1.0:
+                PAN_SPEED = 2
+            if RIGHT_TRIGGER_PRESSED != -1.0:
+                PAN_SPEED = 3
         # print(event)
         # gimbal.getStatusJog(0,0,0,0,4,0,0)
+        print(PAN,TILT,PAN_SPEED,TILT_SPEED)
         gimbal.getStatusJog(PAN,TILT,PAN_SPEED,TILT_SPEED,4,0,0)
     
     #Must disconnect the controller if it is to be used again
