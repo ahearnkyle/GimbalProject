@@ -2,137 +2,191 @@
 <html>
 
 <head>
-  <meta charset="utf-8" />
-  <title>Gimbal Control Center</title>
-  <meta name="viewport" content="width=device-width">
-  <style>
-  .container {
-    width: 600px;
-    margin: 100px auto;
-    text-align: center;
-  }
+    <meta charset="utf-8" />
+    <title>Gimbal Control Center</title>
+    <meta name="viewport" content="width=device-width">
+    <style>
+        .container {
+            width: 600px;
+            margin: 100px auto;
+            text-align: center;
+        }
 
-  .gauge {
-    width: 250px;
-    height: 250px;
-    display: inline-block;
-  }
-  /*Below will allow you to style the tab itself.*/
-  .tab {
-	overflow: hidden;
-	border: 1px solid #ccc;
-	background-color: #f1f1f1;
-  }
-  /*Below is the style for the tab buttons.*/
-  .tab button {
-	background-color: inherit;
-	float: left;
-	border: none;
-	cursor: pointer;
-	padding: 14px 16px;
-	transition: 0.5s; 
-	font-size: 17px;
-  }
-  /*Below will style the button when you hover over it.*/
-  .tab button:hover {
-	background-color: #ddd;
-  }
-  /*Below will allow you to style the tab content.*/
-  .tabcontent {
-	display:none;
-	padding: 6px 12px;
-	border: 1px solid #ccc;
-	border-top: none;
-  }
-  </style>
+        .gauge {
+            width: 250px;
+            height: 250px;
+            display: inline-block;
+        }
+
+        /*Below will allow you to style the tab itself.*/
+
+        .tab {
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+        }
+
+        /*Below is the style for the tab buttons.*/
+
+        .tab button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.5s;
+            font-size: 17px;
+        }
+
+        /*Below will style the button when you hover over it.*/
+
+        .tab button:hover {
+            background-color: #ddd;
+        }
+
+        /*Below will allow you to style the tab content.*/
+
+        .tabcontent {
+            display: none;
+            padding: 6px 12px;
+            border: 1px solid #ccc;
+            border-top: none;
+        }
+    </style>
 </head>
 
 <body>
-  <div class="container">
-    <div id="gg1" class="gauge"></div>
-    <div id="gg2" class="gauge"></div>
-  </div>
-  <script type="text/javascript" src="{{url_for('static',filename='raphael-2.1.4.min.js')}}"></script>
-  <script type="text/javascript" src="{{url_for('static',filename='justgage.js')}}"></script>
-  <script>
-  var gauge1 = new JustGage({
-	  id: "gg1",
-	  value: 90,
-	  min: 0,
-	  max: 360,
-	  title:"Pan"
-	});
-  var gauge2 = new JustGage({
-	  id: "gg2",
-	  value: 67,
-	  min: 0,
-	  max: 360,
-	  title: "Tilt"
-  });
-  </script>
-<div class="tab">
-  <button class="tablinks" onclick="openJog(event)">Jog</button>
-  <button class="tablinks" onclick="openMoveTo(event)">Move To</button>
-  <button class="tablinks" onclick="openPresets(event)">Presets</button>
-</div>
+    <div class="container">
+        <div id="gg1" class="gauge"></div>
+        <div id="gg2" class="gauge"></div>
+    </div>
+    <script type="text/javascript" src="{{url_for('static',filename='raphael-2.1.4.min.js')}}"></script>
+    <script type="text/javascript" src="{{url_for('static',filename='justgage.js')}}"></script>
+    <script>
+        var gauge1 = new JustGage({
+            id: "gg1",
+            value: 90,
+            min: 0,
+            max: 360,
+            title: "Pan"
+        });
+        var gauge2 = new JustGage({
+            id: "gg2",
+            value: 67,
+            min: 0,
+            max: 360,
+            title: "Tilt"
+        });
+    </script>
+    <div class="tab">
+        <button class="tablinks" onclick="openJog(event)">Jog</button>
+        <button class="tablinks" onclick="openMoveTo(event)">Move To</button>
+        <button class="tablinks" onclick="openPresets(event)">Presets</button>
+    </div>
 
-<div id="jog" class="tabcontent">
-  <h3>Welcome to the Job Tab</h3>
-  <p>This is where we will be implementing the Jog functionality</p>
-</div>
+    <div id="jog" class="tabcontent">
+        <h3>Welcome to the Job Tab</h3>
+        <p>This is where we will be implementing the Jog functionality</p>
+    </div>
 
-<div id="moveto" class="tabcontent">
-  <h3>Welcome to the Move To tab</h3>
-  <p>This is where we will be implementing the Move to functionality.</p> 
-</div>
+    <div id="moveto" class="tabcontent">
+        <div style="width:auto;">
+            <div style="width:300px; float:left;">
+                <p>Manual Movement </p>
+                <div style="width:100px; float:left;">
+                    <label for="pan">Pan</label><br>
+                    <input type="number" name="pan" id="pan"> <br>
+                    <button type="reset">C</button>
+                </div>
+                <div style="width:150px; float:right;">
+                    <label for="tilt">Tilt</label><br>
+                    <input type="number" name="tilt" id="tilt">
+                    <button type="reset">C</button>
+                </div>
+                <div style="clear: both;"></div> <br>
+                <button>Physical Center</button> <br>
+                <input type="checkbox" name="holdpan" id="holdpan" value="Hold Pan">
+                <label for="holdpan">Hold Pan</label>
+                <input type="checkbox" name="holdtilt" id="holdtilt" value="Hold Tilt">
+                <label for="topping2">Hold Tilt</label><br>
+                <button>Absolute Center</button> <br>
+                <button>Delta Coordinates</button> <br>
+                <button></button>
+            </div>
 
-<div id="presets" class="tabcontent">
-  <h3>Welcome to the Presets tab</h3>
-  <p>This is where we will be implementing the Presets functionality</p>
-</div>
+            <div style="width:300px; float:right;">
+                <p>Angle Offsets</p>
+                <div style="width:100px; float:left;">
+                    <label for="pan">Pan</label><br>
+                    <input type="number" name="pan" id="pan"> <br>
+                    <button type="reset">C</button>
+                </div>
+                <div style="width:150px; float:right;">
+                    <label for="tilt">Tilt</label><br>
+                    <input type="number" name="tilt" id="tilt">
+                    <button type="reset">C</button>
+                </div>
+                <div style="clear: both;"></div> <br>
+                <button>Get Current Offsets</button> <br>
+                <button>Set Offsets</button> <br>
+                <button>Zero Offsets</button> <br>
+                <button>Align to Center</button> <br>
+                <button> </button>
+            </div>
+            <div style="clear: both;"></div>
+        </div>
+    </div>
 
-<script>
-document.getElementsByClassName('tablinks')[0].click();
-function openJog(evt){
-	var i, tabcontent, tablinks;
-    	tabcontent = document.getElementsByClassName("tabcontent");
-    	for (i = 0; i < tabcontent.length; i++) {
-        	tabcontent[i].style.display = "none";
-    	}
-    	tablinks = document.getElementsByClassName("tablinks");
-    	for (i = 0; i < tablinks.length; i++) {
-        	tablinks[i].className = tablinks[i].className.replace(" active", "");
-    	}
-    	document.getElementById('jog').style.display = "block";
-    	evt.currentTarget.className += " active";
-}
-function openMoveTo(evt) {
-	var i, tabcontent, tablinks;
-    tabcontent = document.getElementsByClassName("tabcontent");
-    for (i = 0; i < tabcontent.length; i++) {
-        tabcontent[i].style.display = "none";
-    }
-    tablinks = document.getElementsByClassName("tablinks");
-    for (i = 0; i < tablinks.length; i++) {
-        tablinks[i].className = tablinks[i].className.replace(" active", "");
-    }
-    document.getElementById('moveto').style.display = "block";
-    evt.currentTarget.className += " active";
-}
-function openPresets(evt){
-var i, tabcontent, tablinks;
-    tabcontent = document.getElementsByClassName("tabcontent");
-    for (i = 0; i < tabcontent.length; i++) {
-        tabcontent[i].style.display = "none";
-    }
-    tablinks = document.getElementsByClassName("tablinks");
-    for (i = 0; i < tablinks.length; i++) {
-        tablinks[i].className = tablinks[i].className.replace(" active", "");
-    }
-    document.getElementById('presets').style.display = "block";
-    evt.currentTarget.className += " active";
-}
-</script>
+    <div id="presets" class="tabcontent">
+        <h3>Welcome to the Presets tab</h3>
+        <p>This is where we will be implementing the Presets functionality</p>
+    </div>
+
+    <script>
+        document.getElementsByClassName('tablinks')[0].click();
+
+        function openJog(evt) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById('jog').style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+
+        function openMoveTo(evt) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById('moveto').style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+
+        function openPresets(evt) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById('presets').style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+    </script>
 </body>
 
 </html>
