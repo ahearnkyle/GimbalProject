@@ -69,7 +69,6 @@
         }
 
         .preset {}
-
     </style>
 </head>
 
@@ -95,7 +94,6 @@
             max: 360,
             title: "Tilt"
         });
-
     </script>
     <div class="tab">
         <button class="tablinks" onclick="openJog(event)">Jog</button>
@@ -130,7 +128,7 @@
                 <label for="topping2">Hold Tilt</label><br>
                 <button>Absolute Center</button> <br>
                 <button>Delta Coordinates</button> <br>
-                <button></button>
+                <button>Home</button>
             </div>
 
             <div style="width:300px; float:right;">
@@ -150,7 +148,7 @@
                 <button>Set Offsets</button> <br>
                 <button>Zero Offsets</button> <br>
                 <button>Align to Center</button> <br>
-                <button> </button>
+                <button>Align to Coordinates</button>
             </div>
             <div style="clear: both;"></div>
         </div>
@@ -214,7 +212,6 @@
             document.getElementById('presets').style.display = "block";
             evt.currentTarget.className += " active";
         }
-
     </script>
 </body>
 
