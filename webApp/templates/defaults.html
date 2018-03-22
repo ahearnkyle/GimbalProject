@@ -2,56 +2,56 @@
 <html>
 
 <head>
-    <meta charset="utf-8" />
-    <title>Gimbal Control Center</title>
-    <meta name="viewport" content="width=device-width">
-    <style>
-        .container {
-            width: 600px;
-            margin: 100px auto;
-            text-align: center;
-        }
+  <meta charset="utf-8" />
+  <title>Gimbal Control Center</title>
+  <meta name="viewport" content="width=device-width">
+  <style>
+  .container {
+    width: 600px;
+    margin: 100px auto;
+    text-align: center;
+  }
 
-        .gauge {
-            width: 250px;
-            height: 250px;
-            display: inline-block;
-        }
-
-        /*Below will allow you to style the tab itself.*/
-
-        .tab {
-            overflow: hidden;
-            border: 1px solid #ccc;
-            background-color: #f1f1f1;
-        }
-
-        /*Below is the style for the tab buttons.*/
-
-        .tab button {
-            background-color: inherit;
-            float: left;
-            border: none;
-            cursor: pointer;
-            padding: 14px 16px;
-            transition: 0.5s;
-            font-size: 17px;
-        }
-
-        /*Below will style the button when you hover over it.*/
-
-        .tab button:hover {
-            background-color: #ddd;
-        }
-
-        /*Below will allow you to style the tab content.*/
-
-        .tabcontent {
-            display: none;
-            padding: 6px 12px;
-            border: 1px solid #ccc;
-            border-top: none;
-        }
+  .gauge {
+    width: 250px;
+    height: 250px;
+    display: inline-block;
+  }
+  /*Below will allow you to style the tab itself.*/
+  .tab {
+	overflow: hidden;
+	border: 1px solid #ccc;
+	background-color: #f1f1f1;
+  }
+  /*Below is the style for the tab buttons.*/
+  .tab button {
+	background-color: inherit;
+	float: left;
+	border: none;
+	cursor: pointer;
+	padding: 14px 16px;
+	transition: 0.5s; 
+	font-size: 17px;
+  }
+  /*Below will style the button when you hover over it.*/
+  .tab button:hover {
+	background-color: #ddd;
+  }
+  /*Below will allow you to style the tab content.*/
+  .tabcontent {
+	display:none;
+	padding: 6px 12px;
+	border: 1px solid #ccc;
+	border-top: none;
+  }
+  .left {
+	position: absolute;
+	left 0;
+	top: 0;
+	height: 100%
+	width:50%
+	backgroud: rgba(0,255,0,0.1);	
+  }   
 
         /*Below will specify categories for the columns in the presets*/
 
@@ -100,10 +100,32 @@
         <button class="tablinks" onclick="openMoveTo(event)">Move To</button>
         <button class="tablinks" onclick="openPresets(event)">Presets</button>
     </div>
-
-    <div id="jog" class="tabcontent">
-        <h3>Welcome to the Job Tab</h3>
-        <p>This is where we will be implementing the Jog functionality</p>
+        <div id="jog" class="tabcontent">
+  <h3>Welcome to the Job Tab</h3>
+  <body>
+	<div id="left" class="left"></div>
+	<script type="text/javascript" src="{{url_for('static',filename='nipplejs.js')}}"></script>
+	<script>
+		var joystick = nipplejs.create({
+			zone:document.getElementById('left'),
+			mode: 'static',
+			position: {left: '80%'},
+			color: 'red',
+			size:100
+		});
+	</script>
+  </body>
+	<form>
+		Set CW:<br>
+		<input type="text" name="setCW"><br>
+		Set CCW:<br>
+		<input type="text" name="setCCW"><br>
+		Set Up:<br>
+		<input type="text" name="setUp"><br>
+		Set Down:<br>
+		<input type="text" name="setDown"><br>
+	</form>
+</div>
     </div>
 
     <div id="moveto" class="tabcontent">
