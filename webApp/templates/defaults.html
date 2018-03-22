@@ -52,6 +52,24 @@
             border: 1px solid #ccc;
             border-top: none;
         }
+
+        /*Below will specify categories for the columns in the presets*/
+
+        .column {
+            float: left;
+            width: 15%;
+        }
+
+        /*Below will help pad the row spacing of a the preset list*/
+
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        .preset {}
+
     </style>
 </head>
 
@@ -77,6 +95,7 @@
             max: 360,
             title: "Tilt"
         });
+
     </script>
     <div class="tab">
         <button class="tablinks" onclick="openJog(event)">Jog</button>
@@ -140,6 +159,15 @@
     <div id="presets" class="tabcontent">
         <h3>Welcome to the Presets tab</h3>
         <p>This is where we will be implementing the Presets functionality</p>
+        <p>Either create a new preset from the current position, or select an existing preset.</p>
+        <div class="row">
+            <div class="column">Number</div>
+            <div class="column">Pan</div>
+            <div class="column">Tilt</div>
+        </div>
+        <select style="width:400px" name="presets" size=10></select>
+
+
     </div>
 
     <script>
@@ -186,6 +214,7 @@
             document.getElementById('presets').style.display = "block";
             evt.currentTarget.className += " active";
         }
+
     </script>
 </body>
 
