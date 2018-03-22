@@ -87,10 +87,13 @@ def startControllerListener():
         RIGHT_TRIGGER_PRESSED = controller.get_axis(RIGHT_TRIGGER)
         print(LEFT_TRIGGER_PRESSED)
         print(RIGHT_TRIGGER_PRESSED)
-        if LEFT_TRIGGER_PRESSED == 0 and RIGHT_TRIGGER_PRESSED == 0 or LEFT_TRIGGER_PRESSED == -1.0 and RIGHT_TRIGGER_PRESSED == -1.0 :
+         
+        if LEFT_TRIGGER_PRESSED == 0.0 or LEFT_TRIGGER_PRESSED == -1.0:
             PAN_SPEED = 0
-            TILT_SPEED = 0   
-        
+            TILT_SPEED = 0
+        if RIGHT_TRIGGER_PRESSED == 0.0 or RIGHT_TRIGGER_PRESSED == -1.0:
+            PAN_SPEED = 0
+            TILT_SPEED = 0
         # get axis
         PAN_PRESSED = controller.get_axis(LEFT_STICK_LEFT_RIGHT)
         TILT_PRESSED = controller.get_axis(LEFT_STICK_UP_DOWN)   
@@ -107,9 +110,9 @@ def startControllerListener():
                 TILT = 0
             if TILT_SPEED == 0:
                 TILT_SPEED = 1
-            if LEFT_TRIGGER_PRESSED != -1.0:
+            if LEFT_TRIGGER_PRESSED != -1.0 and LEFT_TRIGGER_PRESSED != 0.0:
                 TILT_SPEED = 2
-            if RIGHT_TRIGGER_PRESSED != -1.0:
+            if RIGHT_TRIGGER_PRESSED != -1.0 and RIGHT_TRIGGER_PRESSED != 0.0:
                 TILT_SPEED = 3
         elif PAN_PRESSED > -.7 and PAN_PRESSED < .7:
             if TILT_PRESSED < 0:
@@ -118,9 +121,9 @@ def startControllerListener():
                 PAN = 0
             if PAN_SPEED == 0:
                 PAN_SPEED = 1
-            if LEFT_TRIGGER_PRESSED != -1.0:
+            if LEFT_TRIGGER_PRESSED != -1.0 and LEFT_TRIGGER_PRESSED != 0.0:
                 PAN_SPEED = 2
-            if RIGHT_TRIGGER_PRESSED != -1.0:
+            if RIGHT_TRIGGER_PRESSED != -1.0 and RIGHT_TRIGGER_PRESSED != 0.0:
                 PAN_SPEED = 3
         # print(event)
         # gimbal.getStatusJog(0,0,0,0,4,0,0)
@@ -129,6 +132,11 @@ def startControllerListener():
     
     #Must disconnect the controller if it is to be used again
     controller.quit()
+    CONTROLLER_INPUT_ACTIVE = False
+    START_IS_PRESSED = False #button 11
+    LEFT_BUMPER_PRESSED = False #button 6 
+    RIGHT_BUMPER_PRESSED = False #button 7
+
 
 def controllerConnected():
     return os.path.exists(CONTROLLER_DEVICE_PATH)
