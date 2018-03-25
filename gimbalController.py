@@ -2,7 +2,7 @@ import struct
 import socket
 import time
 import sys
-from sympy.geometry import point
+# from sympy.geometry import point
 
 '''
 
@@ -117,15 +117,15 @@ class GimbalController:
 
     # This is the the version of getValue24. I know there is an easier way for this but this is good for now.
     #                   (short[] data, int index)
-    def convertShortToInteger(self, data, index):
-        val = data[index]
-        val |= data[index + 1] << 8
-        val |= data[index + 2] << 16
+    # def convertShortToInteger(self, data, index):
+    #     val = data[index]
+    #     val |= data[index + 1] << 8
+    #     val |= data[index + 2] << 16
 
-        # Acount for two's compliment negative values
-        if ((val & 0x800000) != 0):
-            val = -((~val & 0xFFFFFF) + 1)
-        return val
+    #     # Acount for two's compliment negative values
+    #     if ((val & 0x800000) != 0):
+    #         val = -((~val & 0xFFFFFF) + 1)
+    #     return val
 
     def getStatusJog(self, pan, tilt, panSpeed, tiltSpeed, osl, stop, reset):
         '''
@@ -308,11 +308,11 @@ class GimbalController:
         # get return packet
         self.received()
 
-    def getAngleOffset(self):
-        # Know that the acknowledge command is a array (of type short most likely) is sent.
-        acknowledge = []
-        acknowledge = self.send(0x85)
-        return point(float(self.convertShortToInteger(acknowledge, 0)/100), (float(self.convertShortToInteger(acknowledge, 3)/100)))
+    # def getAngleOffset(self):
+    #     # Know that the acknowledge command is a array (of type short most likely) is sent.
+    #     acknowledge = []
+    #     acknowledge = self.send(0x85)
+    #     return point(float(self.convertShortToInteger(acknowledge, 0)/100), (float(self.convertShortToInteger(acknowledge, 3)/100)))
 
 # def main():
 #     try:
