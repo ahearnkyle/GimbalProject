@@ -31,6 +31,12 @@ class GimbalController:
         else:
             self.sock = sock
 
+        data = ''
+
+        while data == '':
+            print("Connecting to Gimbal...")
+            data = self.getStatusJog(1,1,0,0,4,0,0)
+
     # stubbed out method
     def send(self, packetArray):
         '''
@@ -41,7 +47,7 @@ class GimbalController:
         self.sock.send(bytearray(packetArray))
 
     # stubbed out method
-    def received(self, timeout=400000):
+    def received(self, timeout=5):
         '''
         we might have to do the same thing with the method above
         '''
@@ -185,7 +191,8 @@ class GimbalController:
         # get return packet
         packet = self.received()
 
-        # print(packet)
+        print(packet)
+        return packet
 
     def setSoftLimits(self, axisNumber):
         packetArray = []
@@ -329,7 +336,7 @@ class GimbalController:
 #         #controller.moveToEnteredCoordinate(200, 123)
         
 #     except KeyboardInterrupt:  
-#         controller.getStatusJog(1,1,0,4,0,0)
+#         controller.getStatusJog(1,1,0,0,4,0,0)
 #         sys.exit()        
         
 # if __name__ == '__main__':
