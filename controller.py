@@ -143,6 +143,8 @@ def controllerConnected():
 
 def main():
     pygame.init()
+    pygame.display.init()
+    screen = pygame.display.set_mode((1,1))
     while True:
         while not controllerConnected():
             print("no controller found")
