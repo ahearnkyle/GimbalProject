@@ -315,6 +315,25 @@ class GimbalController:
         # get return packet
         self.received()
 
+    def moveToPreset(self, preset):
+        packetArray = []
+        command = 0x32
+        packetArray.append(STX)
+        packetArray.append(command)
+        packetArray.append(preset)
+        packetArray.append(self.calculateLRC(packetArray[1:3])) 
+        packetArray.append(ETX)
+
+        # send packet
+        self.send(packetArray)
+
+        # get return packet
+        self.received()
+
+    def clearPresets(self):
+        for preset in range(32):
+            self.saveCurrentPositionAsPreset(hex(preset))
+
     # def getAngleOffset(self):
     #     # Know that the acknowledge command is a array (of type short most likely) is sent.
     #     acknowledge = []
