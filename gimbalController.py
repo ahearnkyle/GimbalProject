@@ -35,7 +35,7 @@ class GimbalController:
 
         while data == '':
             print("Connecting to Gimbal...")
-            data = self.getStatusJog(1,1,0,0,4,0,0)
+            data = self.getStatusJog(1, 1, 0, 0, 4, 0, 0)
 
     # stubbed out method
     def send(self, packetArray):
@@ -64,7 +64,7 @@ class GimbalController:
             try:
                 data = self.sock.recv(1024)
                 if ETX in data:
-                    break                
+                    break
             except:
                 pass
         # data = self.sock.recv(2048)
@@ -78,9 +78,8 @@ class GimbalController:
         '''
         self.sock.close()
 
-        
-
     # CommandNumberAndData should be a list of bytes
+
     def calculateLRC(self, CommandNumberAndData):
         '''
         Calculates lrc by xoring all bits together
@@ -92,7 +91,8 @@ class GimbalController:
                 if isinstance(byte, int):
                     lrc ^= byte
                 else:
-                    lrc ^= int.from_bytes(byte, byteorder='little', signed=True)
+                    lrc ^= int.from_bytes(
+                        byte, byteorder='little', signed=True)
             return lrc
         else:
             return None
@@ -100,7 +100,7 @@ class GimbalController:
     def convertIntegerToShort(self, integer):
         '''
         This replaces the setvalue24 https://github.com/ahearnkyle/GimbalProject/wiki/gimbal-connection
-        
+
         returns the short value or none if index out of bounds
 
         This method will take an integer between 32768 and -32768 and will convert that
@@ -108,7 +108,7 @@ class GimbalController:
         32768 now equals b'\xff\x7f' with the \ signifying the different bits
 
         This satisfies the following section of the protocol manual
-        
+
         Passing Integer Values:
         As noted in the protocol command descriptions, some values sent between the remote and PTR units are integer
         values.  These integer values should be passed and received as 16-bit signed two's-complement little endian
@@ -187,7 +187,7 @@ class GimbalController:
         packetArray.append(ETX)
 
         self.send(packetArray)
-     
+
         # get return packet
         packet = self.received()
 
@@ -205,7 +205,7 @@ class GimbalController:
         packetArray.append(ETX)
 
         self.send(packetArray)
-     
+
         # get return packet
         packet = self.received()
 
@@ -229,7 +229,7 @@ class GimbalController:
 
         # send packet
         self.send(packetArray)
-     
+
         # get return packet
         packet = self.received()
 
@@ -251,13 +251,13 @@ class GimbalController:
         packetArray.append(self.convertIntegerToShort(panCoord))
         packetArray.append(self.convertIntegerToShort(tiltCoord))
         packetArray.append(self.calculateLRC(packetArray[1:4]))
-        packetArray.append(ETX)     
+        packetArray.append(ETX)
 
         # send packet
         self.send(packetArray)
 
         # get return packet
-        self.received()  
+        self.received()
 
     def moveToAbsoluteZero(self):
         '''
@@ -267,7 +267,7 @@ class GimbalController:
         command = 0x35
         packetArray.append(STX)
         packetArray.append(command)
-        packetArray.append(self.calculateLRC(packetArray[1:2])) 
+        packetArray.append(self.calculateLRC(packetArray[1:2]))
         packetArray.append(ETX)
 
         # send packet
@@ -286,12 +286,12 @@ class GimbalController:
         packetArray.append(0x00)
         packetArray.append(command)
         packetArray.append(preset)
-        packetArray.append(self.calculateLRC(packetArray[2:4])) 
+        packetArray.append(self.calculateLRC(packetArray[2:4]))
         packetArray.append(ETX)
 
         # send packet
         self.send(packetArray)
-        
+
         # get return packet
         packet = self.received()
 
@@ -306,7 +306,7 @@ class GimbalController:
         packetArray.append(STX)
         packetArray.append(command)
         packetArray.append(preset)
-        packetArray.append(self.calculateLRC(packetArray[1:3])) 
+        packetArray.append(self.calculateLRC(packetArray[1:3]))
         packetArray.append(ETX)
 
         # send packet
@@ -321,7 +321,7 @@ class GimbalController:
         packetArray.append(STX)
         packetArray.append(command)
         packetArray.append(preset)
-        packetArray.append(self.calculateLRC(packetArray[1:3])) 
+        packetArray.append(self.calculateLRC(packetArray[1:3]))
         packetArray.append(ETX)
 
         # send packet
@@ -347,16 +347,16 @@ class GimbalController:
 #         controller.getStatusJog(0,0,3,0,4,0,0)
 #         # controller.moveToHome()
 #         # while 1:
-            
+
 #         #     controller.getStatusJog(1,1,1,4,0,0)
-            
+
 #         #controller.moveToAbsoluteZero()
 #         #controller.retrievePresetTableEntry(0x00)
 #         #controller.moveToEnteredCoordinate(200, 123)
-        
-#     except KeyboardInterrupt:  
+
+#     except KeyboardInterrupt:
 #         controller.getStatusJog(1,1,0,0,4,0,0)
-#         sys.exit()        
-        
+#         sys.exit()
+
 # if __name__ == '__main__':
 #     main()
