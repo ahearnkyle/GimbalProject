@@ -304,6 +304,7 @@ class GimbalController:
         packetArray = []
         command = 0x42
         packetArray.append(STX)
+        packetArray.append(0x00)
         packetArray.append(command)
         packetArray.append(preset)
         packetArray.append(self.calculateLRC(packetArray[1:3]))
@@ -319,6 +320,7 @@ class GimbalController:
         packetArray = []
         command = 0x32
         packetArray.append(STX)
+        packetArray.append(0x00)
         packetArray.append(command)
         packetArray.append(preset)
         packetArray.append(self.calculateLRC(packetArray[1:3]))
