@@ -67,9 +67,10 @@ def startControllerListener():
 
     gimbal = GimbalController('192.168.0.36', 10001)
 
-    # listen for events (button presses)
+    
     while controllerConnected():
         while not CONTROLLER_INPUT_ACTIVE and controllerConnected():
+            # listen for events (button presses)
             for event in pygame.event.get():
                 if not CONTROLLER_INPUT_ACTIVE:
                     if event.type == pygame.JOYBUTTONDOWN:
@@ -82,7 +83,7 @@ def startControllerListener():
                     if START_IS_PRESSED and RIGHT_BUMPER_PRESSED and LEFT_BUMPER_PRESSED:
                         CONTROLLER_INPUT_ACTIVE = True
             gimbal.getStatusJog(0, 0, 0, 0, 4, 0, 0)
-        # get speed
+        # set and moveto preset code
         pygame.event.pump()
         if controller.get_button(LEFT_BUMPER):
             if controller.get_button(A):
@@ -104,19 +105,32 @@ def startControllerListener():
             if controller.get_button(Y):
                 gimbal.moveToPreset(Y)
             continue
-        else:    
+        else:
+            # code for speed    
             LEFT_TRIGGER_PRESSED = controller.get_axis(LEFT_TRIGGER)
             RIGHT_TRIGGER_PRESSED = controller.get_axis(RIGHT_TRIGGER)
             print(LEFT_TRIGGER_PRESSED)
             print(RIGHT_TRIGGER_PRESSED)
 
-            if LEFT_TRIGGER_PRESSED == 0.0 or LEFT_TRIGGER_PRESSED == -1.0:
+            '''
+            it is needed to set speed to 0 since 0 speed indicated no movement 
+            0 direction is still a direction so we can not use this to mean that there is no movement
+            '''
+            if LEFT_TRIGGER_PRESSED == 0.0 or LEFT_TRIGGER_PRESSED == -1.0: # if no input set speed to 0
                 PAN_SPEED = 0
                 TILT_SPEED = 0
-            if RIGHT_TRIGGER_PRESSED == 0.0 or RIGHT_TRIGGER_PRESSED == -1.0:
+            if RIGHT_TRIGGER_PRESSED == 0.0 or RIGHT_TRIGGER_PRESSED == -1.0: # if no input set speed to 0
                 PAN_SPEED = 0
                 TILT_SPEED = 0
-            # get axis
+            '''
+            this will get the axises
+            these indicate what direction the gimbal is to move
+
+            NOTE
+            this code also has the code for setting the speed in the packet
+            this is so that the gimbal can only move in one direction at a time
+            if this needs to be changed simple change elif to if 
+            '''
             PAN_PRESSED = controller.get_axis(LEFT_STICK_LEFT_RIGHT)
             TILT_PRESSED = controller.get_axis(LEFT_STICK_UP_DOWN)
             print(PAN_PRESSED)
@@ -126,26 +140,26 @@ def startControllerListener():
                 TILT = 0
                 gimbal.getStatusJog(0, 0, 0, 0, 4, 0, 0)
             elif TILT_PRESSED > -.6 and TILT_PRESSED < .6:
-                if PAN_PRESSED < 0:
-                    TILT = 64
+                if PAN_PRESSED < 0: # basically sets the direction of the tilt
+                    TILT = 64 # this is 64 as this bit is tilt 
                 else:
                     TILT = 0
                 if TILT_SPEED == 0:
                     TILT_SPEED = 1
-                if LEFT_TRIGGER_PRESSED != -1.0 and LEFT_TRIGGER_PRESSED != 0.0:
+                if LEFT_TRIGGER_PRESSED != -1.0 and LEFT_TRIGGER_PRESSED != 0.0: # -1 and 0 are what the controller gives for resting ie no input note that these are floats
                     TILT_SPEED = 2
-                if RIGHT_TRIGGER_PRESSED != -1.0 and RIGHT_TRIGGER_PRESSED != 0.0:
+                if RIGHT_TRIGGER_PRESSED != -1.0 and RIGHT_TRIGGER_PRESSED != 0.0: # -1 and 0 are what the controller gives for resting ie no input note that these are floats
                     TILT_SPEED = 3
             elif PAN_PRESSED > -.7 and PAN_PRESSED < .7:
-                if TILT_PRESSED < 0:
-                    PAN = 128
+                if TILT_PRESSED < 0: # basically sets the direction of the pan
+                    PAN = 128 # this is 128 as this bit is pan
                 else:
                     PAN = 0
                 if PAN_SPEED == 0:
                     PAN_SPEED = 1
-                if LEFT_TRIGGER_PRESSED != -1.0 and LEFT_TRIGGER_PRESSED != 0.0:
+                if LEFT_TRIGGER_PRESSED != -1.0 and LEFT_TRIGGER_PRESSED != 0.0: # -1 and 0 are what the controller gives for resting ie no input note that these are floats
                     PAN_SPEED = 2
-                if RIGHT_TRIGGER_PRESSED != -1.0 and RIGHT_TRIGGER_PRESSED != 0.0:
+                if RIGHT_TRIGGER_PRESSED != -1.0 and RIGHT_TRIGGER_PRESSED != 0.0: # -1 and 0 are what the controller gives for resting ie no input note that these are floats
                     PAN_SPEED = 3
             # print(event)
             # gimbal.getStatusJog(0,0,0,0,4,0,0)

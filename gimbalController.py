@@ -23,7 +23,8 @@ class GimbalController:
     def __init__(self, host, port, sock=None):
         '''
         Function to initilize the socket
-        can change socket if it is not tcp which is what the below code is
+        this is a tcp socket, but it is created using the very high level command 
+        create_connection. It is best just to use this.
         '''
         if sock is None:
             # self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -40,8 +41,9 @@ class GimbalController:
     # stubbed out method
     def send(self, packetArray):
         '''
-        after just a quick thought about this we would have to make the packet array a 
-        string to send over socket
+        Takes the packet and converts it into a bytearray then sends it over the socket
+        As long as the packet has be built as a list with byte values appended then 
+        it should be sent fine
         '''
         # print(bytearray(packetArray))
         self.sock.send(bytearray(packetArray))
@@ -49,7 +51,11 @@ class GimbalController:
     # stubbed out method
     def received(self, timeout=5):
         '''
-        we might have to do the same thing with the method above
+        The recieve was a bit wierd
+        The gimbal seemed like it would never send the return packet, but this was because
+        the socket was blocking it
+        We changed teh code so that the socket is no longer blocking and implemented a timeout
+
         '''
         # print("start recv")
         self.sock.setblocking(False)
@@ -74,7 +80,7 @@ class GimbalController:
     def closeSocket(self):
         '''
         Close the socket to be able to connect to more
-        should not need to call __init__ again
+        need to call __init__ again to use the socket
         '''
         self.sock.close()
 
@@ -84,6 +90,16 @@ class GimbalController:
         '''
         Calculates lrc by xoring all bits together
         returns lrc or none if CommandNumberAndData is none
+
+        NOTE
+        In python you cant xor bytes together only ints
+        This method also converts objects over to int
+
+        It does calculate the LRC correctly no matter what you through at it byte or int wise
+        
+        NOTE 
+        It is best to use build in functions
+        this uses int built in function to take the bytes and turn them into ints
         '''
         lrc = 0
         if CommandNumberAndData is not None:
@@ -114,6 +130,11 @@ class GimbalController:
         values.  These integer values should be passed and received as 16-bit signed two's-complement little endian
         integers simply split between two bytes.  The first byte should represent the LSB of the integer with the second byte
         containing the MSB of the integer.  Negative values are represented as the two's-complement of the positive value 
+
+        TODO
+        We last modified this method when we were still using the old protocol manual
+        the range of numbers is larger so this will need to be edited eventually, but 
+        for the commands that we have now, none of them are using the larger numbers 
         '''
         if integer > 32767 or integer < -32768:
             return None
@@ -136,12 +157,13 @@ class GimbalController:
     def getStatusJog(self, pan, tilt, panSpeed, tiltSpeed, osl, stop, reset):
         '''
         pan is either 128 or 0
-        tilt is either 128 or 0 
+        tilt is either 64 or 0 
         panSpeed is either 0,1,2,3 with 0 being still and 3 being the fastest
         tiltSpeed is either 0,1,2,3 with 0 being still and 3 being the fastest
-        osl is 4 and overrides the softlimits 
-        stop is 0
-        reset is 0
+        0 for the speed means no movement
+        osl is 4 or 0 and overrides the softlimits 
+        stop is 2 or 0 to stop all movement
+        reset is 1 or 0 to clear all warnings and errors
         '''
         packetArray = []
         command = 0x31
@@ -151,9 +173,7 @@ class GimbalController:
         packetArray.append(command)
         packetArray.append(bitsetCommand)
         if panSpeed is 0:
-            '''
-            Keep gimbel still
-            '''
+            # Keep gimbal still
             packetArray.append(0x00)
         else:
             if panSpeed is 1:
@@ -174,10 +194,8 @@ class GimbalController:
         '''
         Auxiliary byte or bitset
 
-        From the controller protocol 
-        
-        The two auxiliary commands are currently not implemented in hardware but have the potential to provide focus and
-        zoom control, camera switching, time stamping commands, etc. They should be written as 0.
+        These bytes are functional, however we didn't have anything to test with 
+        and these were not in the requirements 
         '''
         packetArray.append(0x00)
         packetArray.append(0x00)
@@ -195,6 +213,9 @@ class GimbalController:
         return packet
 
     def setSoftLimits(self, axisNumber):
+        '''
+        Sets soft limit for that axis
+        '''
         packetArray = []
         command = 0x81
         packetArray.append(STX)
@@ -317,6 +338,10 @@ class GimbalController:
         self.received()
 
     def moveToPreset(self, preset):
+        '''
+        Moves the gimbal to preset
+        preset numbers are between 1 and 32 (0x00-0x1F)
+        '''
         packetArray = []
         command = 0x32
         packetArray.append(STX)
@@ -333,6 +358,11 @@ class GimbalController:
         self.received()
 
     def clearPresets(self):
+        '''
+        This is a method to clear all presets
+        It really doesnt clear the presets as there is not a way to erase them
+        it just sets them all to the current position
+        '''
         for preset in range(32):
             self.saveCurrentPositionAsPreset(hex(preset))
 
