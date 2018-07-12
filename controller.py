@@ -1,7 +1,9 @@
 import pygame
 import time
 import os.path
+import nmap
 from gimbalController import GimbalController
+from gimbalContainer import GimbalContainer
 
 #global variables
 CONTROLLER_DEVICE_PATH = "/dev/input/js0"
@@ -43,6 +45,9 @@ UP      [0][1]
 LEFT    [-1][0]
 '''
 
+# def getAllGimbals():
+
+
 
 def startControllerListener():
 
@@ -65,8 +70,8 @@ def startControllerListener():
     controller = pygame.joystick.Joystick(0)
     controller.init()
 
-    gimbal = GimbalController('192.168.0.36', 10001)
-
+    # gimbal = GimbalController('192.168.0.36', 10001)
+    gimbal = GimbalController('127.0.0.1',5555)
     
     while controllerConnected():
         while not CONTROLLER_INPUT_ACTIVE and controllerConnected():
@@ -86,6 +91,7 @@ def startControllerListener():
         # set and moveto preset code
         pygame.event.pump()
         if controller.get_button(LEFT_BUMPER):
+            print('hit')
             if controller.get_button(A):
                 gimbal.saveCurrentPositionAsPreset(A)
             if controller.get_button(B):
@@ -191,4 +197,6 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    nm = nmap.PortScanner()
+    print(nm.scan('192.168.1.*','80'))
+    # main()
